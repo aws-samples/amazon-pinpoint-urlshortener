@@ -7,7 +7,7 @@
 4.	Move the Pinpoint project from Sandbox to Production (this is when you want to productionize) – Refer Link
 
 
-If you want to modify the code you will need to:
+## If you want to modify the code you will need to:
 ###	create a Cloud9 Environment
 ###	Install OpenJDK 11, Maven using commands:
 ###	sudo amazon-linux-extras install java-openjdk11
