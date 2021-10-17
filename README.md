@@ -14,7 +14,7 @@ If you want to modify the code you will need to:
 ###	sudo yum install -y apache-maven
 ###	mvn clean install -DskipTests
 
-##Deployment Architecture:
+## Deployment Architecture:
 ![alt text](/images/Picture1.png)
 Flow 1 – URL Shortening via Base62 Encoding
 
