@@ -14,6 +14,15 @@ If you want to modify the code you will need to:
 ###	sudo yum install -y apache-maven
 ###	mvn clean install -DskipTests
 
+##Deployment Architecture:
+![alt text](/images/Picture1.png)
+Flow 1 – URL Shortening via Base62 Encoding
+
+![alt text](/images/Picture2.png)
+Flow 2 – Decoding Short URL and redirecting user to Long URL
+
+
+
 ## Deployment Steps:
 IaC code for deployment steps are depicted at – goto folder https://github.com/aws-samples/amazon-pinpoint-urlshortener/CloudFormation-templates
 - Step 1- aws configure --profile urlshorteneradmin configure iam access key and secret key and test aws s3 ls --profile urlshorteneradmin (else you are free to upload these templates to cloudformation one by one) 
