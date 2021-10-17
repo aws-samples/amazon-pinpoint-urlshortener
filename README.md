@@ -8,11 +8,11 @@
 
 
 If you want to modify the code you will need to:
-•	create a Cloud9 Environment
-•	Install OpenJDK 11, Maven using commands:
-o	sudo amazon-linux-extras install java-openjdk11
-o	sudo yum install -y apache-maven
-o	mvn clean install -DskipTests
+###	create a Cloud9 Environment
+###	Install OpenJDK 11, Maven using commands:
+###	sudo amazon-linux-extras install java-openjdk11
+###	sudo yum install -y apache-maven
+###	mvn clean install -DskipTests
 
 ## Deployment Steps:
 IaC code for deployment steps are depicted at – goto folder CloudFormation-templates
