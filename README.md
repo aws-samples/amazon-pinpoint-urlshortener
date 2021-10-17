@@ -69,5 +69,5 @@ The Method 1 (Method name - create-short-url) in API is taking two parameters, L
 
 The Method 2 in API (Method name - shorten-url-within-message) is taking three parameters, Message which has long URL and other content, flag stating whether it has URL or not and Phone number
 
-##License
+## License
 This sample is licensed under the MIT-0 License. See the LICENSE file.
