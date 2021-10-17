@@ -8,11 +8,11 @@
 
 
 ## If you want to modify the code you will need to:
-###	create a Cloud9 Environment
-###	Install OpenJDK 11, Maven using commands:
-###	sudo amazon-linux-extras install java-openjdk11
-###	sudo yum install -y apache-maven
-###	mvn clean install -DskipTests
+1.	create a Cloud9 Environment
+2.	Install OpenJDK 11, Maven using commands:
+3.	sudo amazon-linux-extras install java-openjdk11
+4.	sudo yum install -y apache-maven
+5.	mvn clean install -DskipTests
 
 ## Deployment Architecture:
 ![alt text](/images/Picture1.png)
