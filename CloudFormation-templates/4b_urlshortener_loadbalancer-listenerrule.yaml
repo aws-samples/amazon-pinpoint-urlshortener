@@ -1,0 +1,39 @@
+Parameters:
+
+  LBDNSName:
+    Description: Load Balancer DNS name from previous step
+    Type: String
+  
+  LBListenerARN:
+    Description: Load Balancer Listener ARN name from previous step
+    Type: String  
+  
+  YourDomainName:
+    Description: Your Domain name
+    Type: String
+
+Resources:
+      
+  ListenerRule1:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - Type: redirect
+          RedirectConfig:
+            Port: '#{port}'
+            Protocol: HTTP
+            Host: !Ref LBDNSName
+            Path: '/api/v1/#{path}'
+            Query: '#{query}'
+            StatusCode: HTTP_301
+
+      Conditions:
+        - Field: host-header
+          HostHeaderConfig:
+            Values:
+              - !Ref YourDomainName
+      ListenerArn: !Ref LBListenerARN
+      Priority: 1
+      
+     
+        

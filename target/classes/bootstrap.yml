@@ -1,0 +1,14 @@
+aws:
+  secretsmanager:
+    default-context: application
+    prefix: /urlshortner/sm
+    profile-separator: _
+    fail-fast: true
+    name: URLShortenerApplication
+    enabled: true
+  paramstore:
+    prefix: /config
+    name: URLShortenerApplication
+    profile-separator: _
+    enabled: true
+    fail-fast: true

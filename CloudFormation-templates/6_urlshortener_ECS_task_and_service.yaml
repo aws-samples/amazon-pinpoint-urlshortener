@@ -1,0 +1,159 @@
+Parameters:
+
+  VPC:
+    Type: String
+    Description: Enter VPC
+  PrivateSubnet1:
+    Type: String
+    Description: Enter PrivateSubnet1
+  PrivateSubnet2:
+    Type: String
+    Description: Enter PrivateSubnet2    
+  urlshortenerimage:
+    Type: String
+    Description: Container image for urlshortener
+    Default: mayurbhagia/urlshortenercrossregion:latest
+  ECSClustername:
+    Type: String
+    Description: Enter ECS Cluster Name
+    Default: url-shortener-ECS-cluster    
+  urlshortenertg:
+    Type: String
+    Description: Enter load balancer targetgroup name of urlshortener    
+  deploymentregion:
+    Type: String
+    Description: Enter the deployment region    
+Resources:
+
+  MyECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+        ClusterName: !Ref ECSClustername
+    
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: "SG-for-ECS-URL-Shortener"
+      GroupDescription: "Security group for the instances"
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: -1
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: "URL-Shortener-Log-Group"
+      RetentionInDays: 5
+  TaskIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument: |
+        {
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": { "Service": [ "ecs-tasks.amazonaws.com" ]},
+            "Action": [ "sts:AssumeRole" ]
+          }]
+        }
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchFullAccess
+        - arn:aws:iam::aws:policy/SecretsManagerReadWrite
+        - arn:aws:iam::aws:policy/AmazonSSMFullAccess
+
+
+  TaskExecutionIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument: |
+        {
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": { "Service": [ "ecs-tasks.amazonaws.com" ]},
+            "Action": [ "sts:AssumeRole" ]
+          }]
+        }
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
+        - arn:aws:iam::aws:policy/SecretsManagerReadWrite
+        - arn:aws:iam::aws:policy/AmazonSSMFullAccess
+
+  URLShortenerTaskDef:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      RequiresCompatibilities:
+        - "FARGATE"
+      Family: "URL-Shortener"
+      NetworkMode: "awsvpc"
+      Cpu: 512
+      Memory: 1024
+      TaskRoleArn: !Ref TaskIamRole
+      ExecutionRoleArn: !Ref TaskExecutionIamRole
+      ContainerDefinitions:
+        - Name: "URLShortenerContainerDef"
+          Image: !Ref urlshortenerimage
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: "URL-Shortener-Log-Group"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: "urlshortener"
+          PortMappings:
+            - ContainerPort: 80
+              Protocol: "tcp"
+          Environment:
+            - Name: "region"
+              Value: !Ref deploymentregion    
+
+  PinpointIAMPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: pinpointpolicy
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: VisualEditor0
+            Effect: Allow
+            Action:
+              - mobiletargeting:Update*
+              - mobiletargeting:Get*
+              - mobiletargeting:Send*
+              - mobiletargeting:Put*
+              - mobiletargeting:Create*
+            Resource:
+              - arn:aws:mobiletargeting:*:*:*
+      Roles:
+        - !Ref TaskIamRole
+
+
+  URLShortenerECSService:
+    Type: AWS::ECS::Service
+    DependsOn: 
+      - MyECSCluster
+    Properties:
+      Cluster: !Ref ECSClustername
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: 1
+      LaunchType: "FARGATE"
+
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+            - !Ref SecurityGroup
+          Subnets:
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
+      TaskDefinition: !Ref URLShortenerTaskDef
+      LoadBalancers:
+        - ContainerName: "URLShortenerContainerDef"
+          ContainerPort: 80
+          TargetGroupArn: !Ref urlshortenertg
+      
+
+
+  

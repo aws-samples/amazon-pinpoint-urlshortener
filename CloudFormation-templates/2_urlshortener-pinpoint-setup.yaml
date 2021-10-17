@@ -1,0 +1,28 @@
+Parameters:
+  Pinpointprojectname:
+    Type: String
+    Description: Enter Pinpointprojectname
+    Default: urlshortenerpinpointapp
+    
+Resources:
+
+  Pinpointapplication:
+    Type: AWS::Pinpoint::App
+    Properties:
+        Name: !Ref Pinpointprojectname
+    
+  PinpointSMSchannel:
+    Type: AWS::Pinpoint::SMSChannel
+    Properties:
+        ApplicationId: !Ref Pinpointapplication
+        Enabled: true
+
+Outputs:
+
+
+  pinpointprojectid:
+    Description: Pinpoint project id
+    Value: !Ref Pinpointapplication
+    Export:
+      Name: "URLShortener-Pinpoint-ProjectId"   
+      

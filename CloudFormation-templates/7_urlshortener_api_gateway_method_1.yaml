@@ -1,0 +1,78 @@
+Parameters:
+  apiName:
+    Type: String
+    Default: URLShortenerRESTAPI
+    
+  type:
+    Type: String
+    Default: REGIONAL
+    
+  loadbalancerarn:
+    Type: String
+    
+  stagename:
+    Type: String
+    Default: uat
+
+Resources:
+  URLShortenerRESTAPI:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      EndpointConfiguration:
+        Types:
+          - !Ref type
+      Name: !Ref apiName
+
+  MethodLongToShort:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref URLShortenerRESTAPI
+      ResourceId: !GetAtt 
+        - URLShortenerRESTAPI
+        - RootResourceId
+      HttpMethod: POST
+      AuthorizationType: NONE
+      RequestParameters:
+        method.request.querystring.longurltoconvert: true
+        method.request.querystring.phonenumber: true
+        
+      Integration:
+        Type: HTTP
+        IntegrationHttpMethod: POST
+        Uri: !Join [ "/", [!Ref loadbalancerarn, "api/v1/create-short-url"]]
+        RequestParameters:
+            integration.request.querystring.longurltoconvert: method.request.querystring.longurltoconvert
+            integration.request.querystring.phonenumber: method.request.querystring.phonenumber
+        PassthroughBehavior: "WHEN_NO_TEMPLATES"
+      
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseTemplates: {"application/json": ""}
+      MethodResponses:
+        - StatusCode: 200
+          ResponseModels: { "application/json": "Empty" }
+  
+
+
+      
+  Deployment: 
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - MethodLongToShort
+    Properties: 
+      RestApiId: !Ref URLShortenerRESTAPI
+      Description: "My deployment"
+      StageName: !Ref stagename
+
+Outputs:
+    
+  APIUrlPrefix:
+    Value:
+      Fn::Sub:
+      - https://${ServerlessRestApi}.execute-api.${Region}.amazonaws.com/uat
+      - Region:
+          Ref: AWS::Region
+        ServerlessRestApi:
+          Ref: URLShortenerRESTAPI
+    Export:
+      Name: "URLShortener-APIGW-Endpoint-Method-1"      

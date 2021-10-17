@@ -1,0 +1,12 @@
+com/amazonaws/urlshortener/config/SwaggerConfig.class
+com/amazonaws/urlshortener/entity/ShortenerPOJO.class
+com/amazonaws/urlshortener/UrlshortenerApplication.class
+com/amazonaws/urlshortener/service/Base62Conversion.class
+com/amazonaws/urlshortener/dto/ShortenerDTO.class
+com/amazonaws/urlshortener/AwsSecretsManagerBootstrapConfiguration.class
+com/amazonaws/urlshortener/controller/ShortenerController.class
+com/amazonaws/urlshortener/repository/ShortenerRepository.class
+com/amazonaws/urlshortener/service/SendMessage.class
+com/amazonaws/urlshortener/service/ShortenerService.class
+com/amazonaws/urlshortener/repository/ShortenerAnalysisRepository.class
+com/amazonaws/urlshortener/entity/ShortenerAnalysisPOJO.class

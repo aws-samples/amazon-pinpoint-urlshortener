@@ -1,0 +1,71 @@
+Parameters:
+  apiName:
+    Type: String
+    Default: URLShortenerRESTAPIWithMessage
+  type:
+    Type: String
+    Default: REGIONAL
+  loadbalancerarn:
+    Type: String
+Resources:
+  URLShortenerRESTAPIWithMessage:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      EndpointConfiguration:
+        Types:
+          - !Ref type
+      Name: !Ref apiName
+
+  
+  MethodLongToShortWithTextAndURL:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref URLShortenerRESTAPIWithMessage
+      ResourceId: !GetAtt 
+        - URLShortenerRESTAPIWithMessage
+        - RootResourceId
+      HttpMethod: POST
+      AuthorizationType: NONE
+      RequestParameters:
+        method.request.querystring.messagewithurl: true
+        method.request.querystring.shortflag: true
+        method.request.querystring.phonenumber: true
+        
+      Integration:
+        Type: HTTP
+        IntegrationHttpMethod: POST
+        Uri: !Join [ "/", [!Ref loadbalancerarn, "api/v1/shorten-url-within-message"]]
+        RequestParameters:
+            integration.request.querystring.messagewithurl: method.request.querystring.messagewithurl
+            integration.request.querystring.shortflag: method.request.querystring.shortflag            
+            integration.request.querystring.phonenumber: method.request.querystring.phonenumber
+        PassthroughBehavior: "WHEN_NO_TEMPLATES"
+      
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseTemplates: {"application/json": ""}
+      MethodResponses:
+        - StatusCode: 200
+          ResponseModels: { "application/json": "Empty" }
+
+      
+  Deployment: 
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - MethodLongToShortWithTextAndURL
+    Properties: 
+      RestApiId: !Ref URLShortenerRESTAPIWithMessage
+      Description: "My deployment"
+      StageName: "newuat"
+
+Outputs:
+  APIUrlPrefix:
+    Value:
+      Fn::Sub:
+      - https://${ServerlessRestApi}.execute-api.${Region}.amazonaws.com/newuat
+      - Region:
+          Ref: AWS::Region
+        ServerlessRestApi:
+          Ref: URLShortenerRESTAPIWithMessage
+    Export:
+      Name: "URLShortener-APIGW-Endpoint-Method-2"

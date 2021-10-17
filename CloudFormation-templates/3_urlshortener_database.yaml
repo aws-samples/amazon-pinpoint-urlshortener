@@ -1,0 +1,86 @@
+Parameters:
+  
+    VPC:
+      Description: Enter VPC
+      Type: String
+
+    PrivateSubnet1:
+      Description: Enter PrivateSubnet1
+      Type: String
+    
+    PrivateSubnet2:
+      Description: Enter PrivateSubnet2
+      Type: String  
+
+
+    pDbName:
+      Type: String
+      Default: "urlshortener"
+    pDbUser:
+      Type: String
+      Default: "master"
+    pDbPass:
+      Type: String
+      Description: "It should be less than 8 characters"
+      Default: "Password1234"
+
+Resources:
+
+
+
+  databaseSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to client host
+      GroupName: urlshort-DB-SG
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 3306
+        ToPort: 3306
+        CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 3306
+        ToPort: 3306
+        CidrIp: 0.0.0.0/0
+
+
+    
+  UrlDBSubnetGroup:    
+    Type: AWS::RDS::DBSubnetGroup
+    Properties: 
+      DBSubnetGroupDescription: "Url DB subnet group"
+      DBSubnetGroupName: urldbsubnetgrp
+      SubnetIds: 
+        - !Ref PrivateSubnet1 
+        - !Ref PrivateSubnet2
+
+
+  UrlShortenerRDSInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: !Ref pDbName
+      MasterUsername: !Ref pDbUser
+      MasterUserPassword: !Ref pDbPass
+      Engine: MySQL
+      DBInstanceClass: db.t2.micro
+      StorageType: gp2
+      PubliclyAccessible: True
+      AllocatedStorage: "20"
+      DBInstanceIdentifier: "UrlShortenerRDSInstance"
+      MultiAZ: true
+      DBSubnetGroupName: !Ref UrlDBSubnetGroup
+      VPCSecurityGroups:
+        - !Ref databaseSecurityGroup
+
+Outputs:
+    
+  URLshortenerdatabaseendpoint:
+    Value: !GetAtt UrlShortenerRDSInstance.Endpoint.Address
+    Export:
+      Name: "URLShortener-Database-Endpoint"
+  URLshortenerdatabaseport:
+    Value: !GetAtt UrlShortenerRDSInstance.Endpoint.Port
+    Export:
+      Name: "URLShortener-Database-Port"

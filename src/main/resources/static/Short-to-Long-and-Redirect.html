@@ -1,0 +1,28 @@
+<html>
+<head>
+    <script>
+        function changeAction(form) {
+   
+            var pathvar = document.urlshortenerform.urltoconvert.value;
+            
+            var newpath = "https://XXXXXXX.execute-api.ap-south-1.amazonaws.com/newuat/" +pathvar;
+            document.urlshortenerform.action = newpath;
+            document.urlshortenerform.method = "GET";
+            document.urlshortenerform.submit();
+        }
+    </script>
+ </head>
+<body>
+ 
+    <h3>Enter Short URL to Convert to Long and Redirect</h3> 
+    <form name="urlshortenerform" onsubmit="return changeAction(this)">
+ 
+<input id="urltoconvert" name="urltoconvert"></input>
+ 
+        <button type="submit">Submit</button>
+ 
+ 
+    </form>
+</body>
+ 
+</html>
