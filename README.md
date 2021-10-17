@@ -15,7 +15,7 @@ If you want to modify the code you will need to:
 ###	mvn clean install -DskipTests
 
 ## Deployment Steps:
-IaC code for deployment steps are depicted at – goto folder CloudFormation-templates
+IaC code for deployment steps are depicted at – goto folder https://github.com/aws-samples/amazon-pinpoint-urlshortener/CloudFormation-templates
 - Step 1- aws configure --profile urlshorteneradmin configure iam access key and secret key and test aws s3 ls --profile urlshorteneradmin (else you are free to upload these templates to cloudformation one by one) 
 
 - Step 2 - git clone <this repository>
