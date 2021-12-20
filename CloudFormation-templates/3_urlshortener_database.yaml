@@ -22,7 +22,6 @@ Parameters:
     pDbPass:
       Type: String
       Description: "It should be less than 8 characters"
-      Default: "Password1234"
 
 Resources:
 
