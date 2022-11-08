@@ -19,6 +19,7 @@ Parameters:
     pDbUser:
       Type: String
       Default: "master"
+      NoEcho: true
     pDbPass:
       Type: String
       Description: "It should be less than 8 characters"
