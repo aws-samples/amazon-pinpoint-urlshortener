@@ -22,6 +22,7 @@ Parameters:
     pDbPass:
       Type: String
       Description: "It should be less than 8 characters"
+      NoEcho: true
 
 Resources:
 
